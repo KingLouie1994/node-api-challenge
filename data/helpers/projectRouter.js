@@ -12,21 +12,12 @@ const router = express.Router();
 
 router.get("/", (req, res) => {
   Projects.get()
-    .then(projectList => {
-      const projectActionsPromise = projectList.map(project =>
-        Projects.getProjectActions(project.id)
-      );
-      Promise.all(projectActionsPromise).then(projectActions => {
-        const projectsWithActions = projectList.map((project, i) => ({
-          ...project,
-          actions: projectActions[i]
-        }));
-        res.status(200).json(projectsWithActions);
-      });
+    .then(projects => {
+      res.status(200).json(projects);
     })
-    .catch(err => {
+    .catch(error => {
       res.status(500).json({
-        messgae: "There is an error retrieving projects and its actions"
+        message: "There was an error retrieving all projects"
       });
     });
 });
@@ -56,7 +47,9 @@ router.post("/:id/actions", [validateProjectId, validateAction], (req, res) => {
     .catch(err => {
       res
         .status(500)
-        .json({ message: "There is an error adding this action to the project"});
+        .json({
+          message: "There is an error adding this action to the project"
+        });
     });
 });
 
